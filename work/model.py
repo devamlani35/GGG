@@ -109,6 +109,3 @@ if __name__ == "__main__":
 
     print("Model training terminated, final loss: {}, final epochs: {}".format(val_losses[-1], epoch))
 
-
-
-
