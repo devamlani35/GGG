@@ -59,6 +59,11 @@ class ImDataset():
         X = torch.Tensor(X)
         return X, y_labels
 
+
     def get_valid_batch(self, idx):
         return self.query_db(self.val_indices[idx])[0]
 
+
+if __name__ == "__main__":
+    ds= ImDataset()
+    print(ds[0])

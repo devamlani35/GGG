@@ -19,4 +19,8 @@ conn =  mysql.connector.connect(host=ENDPOINT, user=USER, password=token, port=P
 cur = conn.cursor()
 cur.execute("SELECT * FROM data_paths WHERE id=3;")
 query_results = cur.fetchall()
+<<<<<<< HEAD:work/test_db.py
 print(query_results)
+=======
+print(query_results)
+>>>>>>> 08316499b573eba334c6e2e31edf262b7a686458:work/used_scripts/test_db.py
