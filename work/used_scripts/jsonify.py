@@ -1,6 +1,8 @@
 import json
 import os
-
+"""
+Script to turn images directory to JSON file to populate db
+"""
 dirs = os.listdir("../backup_images")
 dic = {}
 for val in dirs:
