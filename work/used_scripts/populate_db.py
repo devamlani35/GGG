@@ -5,9 +5,7 @@ import boto3
 import os
 import json
 
-"""
-Script to load image pathes from JSON and populate RDS
-"""
+#Script to load image pathes from JSON and populate RDS
 ENDPOINT = "gnome-1.cwqqmyn32oy5.us-east-1.rds.amazonaws.com"
 PORT="3306"
 USER="dev"
