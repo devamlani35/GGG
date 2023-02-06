@@ -17,6 +17,7 @@ relu = F.relu
 class CNN (nn.Module):
 
     def __init__ (self):
+        super().__init__()
         # Reshape from (720,1280,3) to (233,420,48)
         self.c1 = Conv2d(3,48,21,3)
         # Reshape from (233,420,48) to (76,138,48)
@@ -32,15 +33,16 @@ class CNN (nn.Module):
         # Reshape from (13,17,192) to (5,7,192)
         self.p3 = MaxPool2d(3, 2)
 
-        self.d1 = Dropout(rate=0.5)
+        self.d1 = Dropout(p=0.2)
         # Flatten here, then begin fully-connected layers
         self.l1 = Linear(6720, 1200)
-        self.d2 = Dropout(rate=0.5)
+        self.d2 = Dropout(p=0.2)
         self.l2 = Linear(1200, 120)
         self.l3 = Linear(120, 10)
         self.l4 = Linear(10,2)
         
     def forward(self, x):
+        print(x.shape)
         x = self.p1(relu(self.c1(x)))
         x = self.p2(relu(self.c2(x)))
         x = relu(self.c3(x))
@@ -61,6 +63,7 @@ def is_increasing(losses):
         if losses[i]<losses[i-1]:
             return False
     return True
+
 if __name__ == "__main__":
     saved = False
     ds = ImDataset.ImDataset()
@@ -69,6 +72,7 @@ if __name__ == "__main__":
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     epochs = 50
     val_losses = []
+    print("Training")
     for epoch in range(epochs):
         running_loss = 0.0
         ds.reshuffle()
@@ -82,6 +86,7 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
             running_loss += loss.item()
+            print("batch_done")
             if not batch_c%1000:
                 print("epoch = {}, batch = {}, loss = {}".format(epoch, batch_c, running_loss))
         valid_loss = 0.0
