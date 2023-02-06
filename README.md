@@ -1,6 +1,6 @@
 # Garden Gnome Guardian, Real-time pest detection trained on ImageNet
 ## Goal:
-###### To use deep learning techniques to identify and locate garden pests (ex. Squirrels) in image frames in real time. 
+##### To use deep learning techniques to identify and locate garden pests (ex. Squirrels) in image frames in real time. 
 ## Cloud Infrastructure:
 ###### Model training hosted on Amazon EC2 server
 ###### Image files stored in AWS S3 Bucket
