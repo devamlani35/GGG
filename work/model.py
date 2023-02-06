@@ -17,6 +17,7 @@ relu = F.relu
 class CNN (nn.Module):
 
     def __init__ (self):
+        super().__init__()
         # Reshape from (720,1280,3) to (233,420,48)
         self.c1 = Conv2d(3,48,21,3)
         # Reshape from (233,420,48) to (76,138,48)
