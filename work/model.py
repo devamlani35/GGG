@@ -42,7 +42,6 @@ class CNN (nn.Module):
         self.l4 = Linear(10,2)
         
     def forward(self, x):
-        print(x.shape)
         x = self.p1(relu(self.c1(x)))
         x = self.p2(relu(self.c2(x)))
         x = relu(self.c3(x))
