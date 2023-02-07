@@ -79,6 +79,7 @@ if __name__ == "__main__":
         model.train()
         for batch_c in range(len(ds)):
             X_train, y_train = ds[batch_c]
+            print("got_scans")
             optimizer.zero_grad()
 
             y_pred = model(X_train)
