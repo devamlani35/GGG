@@ -12,6 +12,7 @@ client = boto3.client('s3')
 class ImDataset():
     REGION = "us-east-1a"
     os.environ['LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN'] = '1'
+
     # Initialization function, sets instance variables
     def __init__(self,num_files = 167585, mode="part1", db_table="data_paths", db_host="gnome-1.cwqqmyn32oy5.us-east-1.rds.amazonaws.com", bucket_arn="arn:aws:s3-object-lambda:us-east-1:068469771374:accesspoint/s3-lambda-3c2"):
         self.batch_size = 10
@@ -63,10 +64,10 @@ class ImDataset():
             img_arr = np.frombuffer(res["Body"].read(), dtype=np.float32)
             img_arr = img_arr.reshape((720,1280, 3))
             t_img = img_arr.copy()
-            # Appends each image array in the batch together
             x.append(t_img)
-
+        x = np.array(X)
         x = torch.Tensor(x)
+        x = torch.permute(x, (0,3,1,2))
         return x, y_labels
 
     # Gets a validation data point
