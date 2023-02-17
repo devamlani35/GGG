@@ -18,19 +18,19 @@ class CNN (nn.Module):
 
     def __init__ (self):
         super().__init__()
-        # Reshape from (720,1280,3) to (233,420,48)
+        # Reshape from (3,720,1280) to (48,233,420)
         self.c1 = Conv2d(3,48,21,3)
-        # Reshape from (233,420,48) to (76,138,48)
+        # Reshape from (48,233,420) to (48,76,138)
         self.p1 = MaxPool2d(5,3)
-        # Reshape from (76,138,48) to (23,44,192)
+        # Reshape from (48, 76,138) to (192,23,44)
         self.c2 = Conv2d(48, 192,7,3)
-        # Reshape from (23,44,192) to (13,17,192)
+        # Reshape from (192,23,44) to (192,13,17)
         self.p2 = MaxPool2d(11, (1,2))
         # Retains Shape
         self.c3 = Conv2d(192, 384,7,1,padding="same")
         self.c4 = Conv2d(384,384, 7,1,padding="same")
         self.c5 = Conv2d(384, 256, 5,1,padding="same")
-        # Reshape from (13,17,192) to (5,7,192)
+        # Reshape from (192,13,17) to (192,5,7)
         self.p3 = MaxPool2d(3, 2)
 
         self.d1 = Dropout(p=0.2)
