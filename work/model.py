@@ -35,7 +35,7 @@ class CNN (nn.Module):
 
         self.d1 = Dropout(p=0.2)
         # Flatten here, then begin fully-connected layers
-        self.l1 = Linear(6720, 1200)
+        self.l1 = Linear(6, 1200)
         self.d2 = Dropout(p=0.2)
         self.l2 = Linear(1200, 120)
         self.l3 = Linear(120, 10)
@@ -43,18 +43,31 @@ class CNN (nn.Module):
         
     def forward(self, x):
         x = self.p1(relu(self.c1(x)))
+        print(x.shape)
         x = self.p2(relu(self.c2(x)))
+        print(x.shape)
         x = relu(self.c3(x))
+        print(x.shape)
         x = relu(self.c4(x))
+        print(x.shape)
         x = relu(self.c5(x))
+        print(x.shape)
         x = self.p3(x)
+        print(x.shape)
         x = self.d1(x)
+        print(x.shape)
         x = flatten(x)
+        print(x.shape)
         x = relu(self.l1(x))
+        print(x.shape)
         x = self.d2(x)
+        print(x.shape)
         x = relu(self.l2(x))
+        print(x.shape)
         x = relu(self.l3(x))
+        print(x.shape)
         x = softmax(self.l4(x))
+        print(x.shape)
         return x
 
 def is_increasing(losses):
@@ -78,6 +91,7 @@ if __name__ == "__main__":
         model.train()
         for batch_c in range(len(ds)):
             X_train, y_train = ds[batch_c]
+            print(X_train.shape, y_train.shape)
             optimizer.zero_grad()
 
             y_pred = model(X_train)
@@ -112,3 +126,4 @@ if __name__ == "__main__":
                     break
 
     print("Model training terminated, final loss: {}, final epochs: {}".format(val_losses[-1], epoch))
+
