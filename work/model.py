@@ -18,56 +18,46 @@ class CNN (nn.Module):
 
     def __init__ (self):
         super().__init__()
-        # Reshape from (3,720,1280) to (48,233,420)
-        self.c1 = Conv2d(3,48,21,3)
-        # Reshape from (48,233,420) to (48,76,138)
+        # Reshape to (48,234,420)
+        self.c1 = Conv2d(3,48,21,3, padding=0)
+        # Reshape to (48,77,139)
         self.p1 = MaxPool2d(5,3)
-        # Reshape from (48, 76,138) to (192,23,44)
+        # Reshape to (192,24,45)
         self.c2 = Conv2d(48, 192,7,3)
-        # Reshape from (192,23,44) to (192,13,17)
+        # Reshape to (192,14,18)
         self.p2 = MaxPool2d(11, (1,2))
-        # Retains Shape
+        # Reshape to (384,14,18)
         self.c3 = Conv2d(192, 384,7,1,padding="same")
         self.c4 = Conv2d(384,384, 7,1,padding="same")
+        # Reshape to (256,14,18)
         self.c5 = Conv2d(384, 256, 5,1,padding="same")
-        # Reshape from (192,13,17) to (192,5,7)
+        # Reshape from (256,14,18) to (256,6,8)
         self.p3 = MaxPool2d(3, 2)
 
         self.d1 = Dropout(p=0.2)
         # Flatten here, then begin fully-connected layers
-        self.l1 = Linear(6, 1200)
+        self.l1 = Linear(12288, 1200)
         self.d2 = Dropout(p=0.2)
         self.l2 = Linear(1200, 120)
         self.l3 = Linear(120, 10)
         self.l4 = Linear(10,2)
         
     def forward(self, x):
-        x = self.p1(relu(self.c1(x)))
-        print(x.shape)
-        x = self.p2(relu(self.c2(x)))
-        print(x.shape)
+        x = self.c1(x)
+        x = self.p1(relu(x))
+        x = relu(self.c2(x))
+        x = self.p2(x)
         x = relu(self.c3(x))
-        print(x.shape)
         x = relu(self.c4(x))
-        print(x.shape)
         x = relu(self.c5(x))
-        print(x.shape)
         x = self.p3(x)
-        print(x.shape)
         x = self.d1(x)
-        print(x.shape)
-        x = flatten(x)
-        print(x.shape)
+        x = flatten(x,1)
         x = relu(self.l1(x))
-        print(x.shape)
         x = self.d2(x)
-        print(x.shape)
         x = relu(self.l2(x))
-        print(x.shape)
         x = relu(self.l3(x))
-        print(x.shape)
-        x = softmax(self.l4(x))
-        print(x.shape)
+        x = softmax(self.l4(x), dim=1)
         return x
 
 def is_increasing(losses):
@@ -91,23 +81,27 @@ if __name__ == "__main__":
         model.train()
         for batch_c in range(len(ds)):
             X_train, y_train = ds[batch_c]
-            print(X_train.shape, y_train.shape)
             optimizer.zero_grad()
+            if (X_train, y_train)== (None, None):
+                continue
 
             y_pred = model(X_train)
-            loss = criterion(y_train, y_pred)
+            y_pred = torch.amax(y_pred, axis=1)
+            loss = criterion(y_pred, y_train)
             loss.backward()
             optimizer.step()
             running_loss += loss.item()
-            print("batch_done")
             if not batch_c%1000:
                 print("epoch = {}, batch = {}, loss = {}".format(epoch, batch_c, running_loss))
         valid_loss = 0.0
         model.eval()
         for bc in range(ds.get_len_val()):
             X_test, y_test = ds.get_valid_batch(bc)
+            if (X_test, y_test) == (None, None):
+                continue
             y_pred_val = model(X_test)
-            loss = criterion(y_test, y_pred_val)
+            y_pred_val = torch.amax(y_pred_val, axis=1)
+            loss = criterion(y_pred_val, y_test)
             valid_loss += loss
         if valid_loss < val_losses[-1]:
             print("saving model")
