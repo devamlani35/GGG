@@ -5,7 +5,7 @@ import os
 import mysql.connector
 import boto3
 from PIL import Image
-
+import time
 client = boto3.client('s3')
 
 # Custom Dataset class, does not inherit from torch Dataset because files are not stored on hard drive
@@ -59,12 +59,16 @@ class ImDataset():
         x = list()
         # Calls GETOBJECT on s3 API for each file in x_paths, uses lambda endpoint to get preprocessed images
         for val in x_paths:
-            res = client.get_object(Bucket=self.arn, Key = val)
-            # Changes bytes to numpy array and reshapes
-            img_arr = np.frombuffer(res["Body"].read(), dtype=np.float32)
-            img_arr = img_arr.reshape((720,1280, 3))
-            t_img = img_arr.copy()
-            x.append(t_img)
+            try:
+                res = client.get_object(Bucket=self.arn, Key = val)
+
+                # Changes bytes to numpy array and reshapes
+                img_arr = np.frombuffer(res["Body"].read(), dtype=np.float32)
+                img_arr = img_arr.reshape((720,1280, 3))
+                t_img = img_arr.copy()
+                x.append(t_img)
+            except:
+                return None, None
         x = np.array(x)
         x = torch.Tensor(x)
         x = torch.permute(x, (0,3,1,2))
