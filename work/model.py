@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 import pandas as pd
 import torch.nn.functional as F
+import time
 from torch.nn.functional import softmax
 from torch.nn import MaxPool2d
 from torch.nn import Conv2d
@@ -12,12 +13,13 @@ from torch.nn import Linear
 import torch.optim as optim
 import ImDataset
 relu = F.relu
-
+device = torch.device("cuda:0")
 
 class CNN (nn.Module):
 
     def __init__ (self):
         super().__init__()
+        #Note: when training, all shapes begin with batch_size
         # Reshape to (48,234,420)
         self.c1 = Conv2d(3,48,21,3, padding=0)
         # Reshape to (48,77,139)
@@ -69,7 +71,7 @@ def is_increasing(losses):
 if __name__ == "__main__":
     saved = False
     ds = ImDataset.ImDataset()
-    model = CNN()
+    model = CNN().to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
     epochs = 50
@@ -80,16 +82,20 @@ if __name__ == "__main__":
         ds.reshuffle()
         model.train()
         for batch_c in range(len(ds)):
+            print(batch_c)
             X_train, y_train = ds[batch_c]
             optimizer.zero_grad()
-            if (X_train, y_train)== (None, None):
+            if X_train==None:
                 continue
-
+            X_train = X_train.to(device)
+            y_train = y_train.to(device)
+            start_time = time.time()
             y_pred = model(X_train)
             y_pred = torch.amax(y_pred, axis=1)
             loss = criterion(y_pred, y_train)
             loss.backward()
             optimizer.step()
+            print(time.time()-start_time)
             running_loss += loss.item()
             if not batch_c%1000:
                 print("epoch = {}, batch = {}, loss = {}".format(epoch, batch_c, running_loss))
