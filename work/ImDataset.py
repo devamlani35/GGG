@@ -65,7 +65,7 @@ class ImDataset():
             img_arr = img_arr.reshape((720,1280, 3))
             t_img = img_arr.copy()
             x.append(t_img)
-        x = np.array(X)
+        x = np.array(x)
         x = torch.Tensor(x)
         x = torch.permute(x, (0,3,1,2))
         return x, y_labels
