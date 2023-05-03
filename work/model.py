@@ -47,6 +47,9 @@ class CNN (nn.Module):
         self.l4 = Linear(10,2)
          
     def forward(self, x):
+        model_mode  = "train"
+        if len(x.shape)==3:
+            model_mode = "test"
         x = self.c1(x)
         x = self.p1(relu(x))
         x = relu(self.c2(x))
@@ -56,13 +59,18 @@ class CNN (nn.Module):
         x = relu(self.c5(x))
         x = self.p3(x)
         x = self.d1(x)
-        
-        x = flatten(x,1)
+        if model_mode=="train":
+            x = flatten(x,1)
+        else:
+            x = flatten(x)
         x = relu(self.l1(x))
         x = self.d2(x)
         x = relu(self.l2(x))
         x = relu(self.l3(x))
-        x = softmax(self.l4(x), dim=1)
+        if model_mode=="train":
+            x = softmax(self.l4(x), dim=1)
+        else:
+            x = softmax(self.l4(x), dim=0)
         return x
 
 def is_increasing(losses):
